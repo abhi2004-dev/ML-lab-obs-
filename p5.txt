@@ -1,0 +1,53 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from collections import Counter
+
+x = np.random.rand(100)
+
+train = x[:50]
+test = x[50:]
+
+labels = ["Class1" if i<=0.5 else "Class2" for i in train]
+
+def knn(t,k):
+    d = [(abs(t-train[i]), labels[i]) for i in range(50)]
+    d.sort()
+    return Counter([j[1] for j in d[:k]]).most_common(1)[0][0]
+
+print("--- k-Nearest Neighbors Classification ---")
+print("Training dataset: First 50 points labeled")
+print("Testing dataset: Remaining 50 points\n")
+
+for k in [1,2,3,4,5,20,30]:
+
+    print(f"Results for k = {k}:")
+
+    pred = []
+
+    for i,t in enumerate(test,start=51):
+        c = knn(t,k)
+        pred.append(c)
+        print(f"Point x{i} (value: {t:.4f}) is classified as {c}")
+
+    print("\n")
+
+    c1 = [test[i] for i in range(len(test)) if pred[i]=="Class1"]
+    c2 = [test[i] for i in range(len(test)) if pred[i]=="Class2"]
+
+    plt.figure(figsize=(8,5))
+
+    plt.scatter(train,[0]*50,
+                c=["blue" if l=="Class1" else "red" for l in labels],
+                label="Training Data")
+
+    plt.scatter(c1,[1]*len(c1),c="blue",marker="x",label="Class1 (Test)")
+    plt.scatter(c2,[1]*len(c2),c="red",marker="x",label="Class2 (Test)")
+
+    plt.title(f"k-NN Classification Results for k = {k}")
+    plt.xlabel("Data Points")
+    plt.ylabel("Classification Level")
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+print("Classification complete.")

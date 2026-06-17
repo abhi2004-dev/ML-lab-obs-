@@ -1,0 +1,19 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+X = np.linspace(0,6.28,100)
+y = np.sin(X) + 0.1*np.random.randn(100)
+
+def lwr(x,t=0.5):
+    w = np.exp(-(X-x)**2/(2*t*t))
+    X1 = np.c_[np.ones(len(X)),X]
+    W = np.diag(w)
+    b = np.linalg.inv(X1.T@W@X1) @ X1.T @ W @ y
+    return [1,x] @ b
+
+xt = np.linspace(0,6.28,200)
+yt = [lwr(i) for i in xt]
+
+plt.scatter(X,y)
+plt.plot(xt,yt,'r')
+plt.show()
